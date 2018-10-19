@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <script src="http://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous">
+    </script>
+
+    <link href="https://fonts.googleapis.com/css?family=Griffy|Marcellus+SC|Tangerine:400,700" rel="stylesheet">
+    <link rel="stylesheet" href="harry-potter-styles.css">
+
+    <title>Welcome</title>
+</head>
+<body id="body" onload="getAllInfo()" ng-app="potterApp" ng-controller="potterCtrl">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-animate.js"></script>
+
+    <nav class="main-menu">
+        <ul class="main-menu-list">
+            <li id="tab1" class="main-menu-list__item" tabindex="0" onclick="goToWelcome('tab1')">Welcome to Hogwarts</li>
+            <li id="tab2" class="main-menu-list__item" tabindex="0" ng-click="goToCommonRoomCtrl('tab2')">House Common Room</li>
+            <!--<li id="tab3" class="main-menu-list__item" tabindex="0" onclick="goToDuel('tab3')">Dueling Room</li>-->
+        </ul>
+    </nav>
+
+    <div class="">
+        <img src="hogwarts-logo.png" alt="hogwarts-logo" class="logo logo-left">
+        <img src="hogwarts-logo.png" alt="hogwarts-logo" class="logo logo-right">
+    </div>
+
+    <div id="welcome" class="fadeIn">
+        <div class="main-title">
+            <h2 class="pre-main-title">Welcome to</h2>
+            <h1 class="prime-main-title">Hogwarts</h1>
+            <h2 class="post-main-title">School of Witchcraft<br>and Wizardry</h2>
+        </div>
+
+        <p class="about-hogwarts">
+            You have been chosen to come here to study in the arcane arts so that one day<br>
+            you might become a great witch or wizard and make your family proud.<br>
+            You may now enter the school with the other first-year students
+            and be sorted into your House.
+        </p>
+
+        <button class="start-btn" ng-click="setCtrlInfo()">Enter Hogwarts</button>
+    </div>
+
+    <div id="sort-hat-response" class="fadeOut">
+        <div class="response-content">
+            <h3>Congratulations!</h3>
+            <p> The Sorting Hat has sorted you into {{ house }} House!<br>
+                The people you will meet and things you will learn in this House will help you
+                on your way to Greatness!
+            </p>
+            <button class="start-btn" ng-click="goToCommonRoomCtrl('tab2')">Continue</button>
+        </div>
+    </div>
+
+    <div id="common-room" class="fadeOut">
+        <h1 class="common-room-title">The Common Room</h1>
+
+        <div class="house-info">
+            <div class="house-general-info">
+                <p>Founder: {{ founder }}</p>
+                <p>Head of House: {{ headOfHouse }}</p>
+                <p>House Ghost: {{ houseGhost }}</p>
+                <p>House Colors: {{ houseColors }}</p>
+                <p>House Symbol: {{ houseSymbol }}</p>
+                <p>House Values: </p>
+                <ul></ul>
+            </div>
+
+            <div class="house-members">
+                <p>Members:</p>
+                <ul id="members-list"></ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="dueling-room" class="fadeOut">
+        <h1 class="dueling-room-title">The Dueling Room</h1>
+
+    </div>
+
+
+    <script>
+
+        let apiKey = '$2a$10$fsCfRCirQo9iEdFd9cXdoe6K284BfjjvzLh6sh7t0KhBeho1EkKYm';
+        let houses = {};
+        let characters = {};
+        let spells = {};
+        let randHouse = '';
+        let currHouse = '';
+
+        let body = document.getElementById('body');
+        let welcomeDiv = document.getElementById('welcome');
+        let hatResponse = document.getElementById('sort-hat-response');
+        let commonRoom = document.getElementById('common-room');
+        let duelRoom = document.getElementById('dueling-room');
+
+        let welcomeTab = document.getElementById('tab1');
+        let commonRoomTab = document.getElementById('tab2');
+        let duelRoomTab = document.getElementById('tab3');
+
+        let app = angular.module('potterApp', []);
+        app.controller('potterCtrl', function ($scope) {
+
+            $scope.setCtrlInfo = function () {
+                console.log(houses);
+                $scope.house = randHouse;
+                $scope.houseInfo = houses[randHouse];
+                $scope.headOfHouse = $scope.houseInfo.headOfHouse;
+                beginAdventure();
+            };
+
+            $scope.goToCommonRoomCtrl = function (choiceId) {
+
+                let houseInfo = houses[randHouse];
+                $scope.founder = (houseInfo.name === 'Gryffindor') ? 'Godric Gryffindor' : houseInfo.founder;
+                $scope.headOfHouse = houseInfo.headOfHouse;
+                $scope.houseGhost = houseInfo.houseGhost;
+                $scope.houseColors = caps(houseInfo.colors[0]) + ' and ' + caps(houseInfo.colors[1]);
+                $scope.houseSymbol = caps(houseInfo.mascot);
+
+                goToCommonRoom(choiceId);
+            };
+        });
+
+
+        function getAllInfo() {
+
+            let housesQuery = 'https://www.potterapi.com/v1/houses?key=' + apiKey;
+            $.getJSON(housesQuery, function (data) {
+
+                for (let i = 0; i < data.length; i++) {
+                    let house = data[i];
+                    houses[house.name] = house;
+                }
+            });
+
+            let charactersQuery = 'https://www.potterapi.com/v1/characters?key=' + apiKey;
+            $.getJSON(charactersQuery, function (data) {
+
+                for (let j = 0; j < data.length; j++) {
+                    let character = data[j];
+                    characters[character._id] = character;
+                    // characters[character.name] = character;
+                }
+            });
+
+            let spellsQuery = 'https://www.potterapi.com/v1/spells?key=' + apiKey;
+            $.getJSON(spellsQuery, function (data) {
+
+                for (let k = 0; k < data.length; k++) {
+                    let spell = data[k];
+                    spells[spell._id] = spell;
+                    // spells[spell.spell] = spell;
+                }
+            });
+
+            sortIntoHouse();
+        }
+
+        function sortIntoHouse() {
+
+            let query = 'https://www.potterapi.com/v1/sortingHat?key=' + apiKey;
+            $.getJSON(query, function (data) {
+                randHouse = data;
+                console.log(randHouse);
+            });
+        }
+
+        function setActiveTab(tabId) {
+            // return;
+            // switch (tabId) {
+            //     case 'tab1':
+            //         welcomeTab.classList.add('active');
+            //         commonRoomTab.classList.remove('active');
+            //         duelRoomTab.classList.remove('active');
+            //         break;
+            //     case 'tab2':
+            //         welcomeTab.classList.remove('active');
+            //         commonRoomTab.classList.add('active');
+            //         duelRoomTab.classList.remove('active');
+            //         break;
+            //     case 'tab3':
+            //         welcomeTab.classList.remove('active');
+            //         commonRoomTab.classList.remove('active');
+            //         duelRoomTab.classList.add('active');
+            //         break;
+            //     default:
+            //         console.log("Unreachable");
+            // }
+        }
+
+        function goToWelcome(choice) {
+            setActiveTab(choice);
+            setBackground('welcome');
+            welcomeDiv.classList.add('fadeIn');
+            welcomeDiv.classList.remove('fadeOut');
+            hatResponse.classList.remove('fadeIn');
+            hatResponse.classList.add('fadeOut');
+            commonRoom.classList.remove('fadeIn');
+            commonRoom.classList.add('fadeOut');
+            duelRoom.classList.remove('fadeIn');
+            duelRoom.classList.add('fadeOut');
+            sortIntoHouse();
+
+        }
+
+        function goToCommonRoom(choice) {
+            if (currHouse === '') currHouse = randHouse;
+            setActiveTab(choice);
+            setBackground('common');
+            welcomeDiv.classList.remove('fadeIn');
+            welcomeDiv.classList.add('fadeOut');
+            hatResponse.classList.remove('fadeIn');
+            hatResponse.classList.add('fadeOut');
+            commonRoom.classList.add('fadeIn');
+            commonRoom.classList.remove('fadeOut');
+            duelRoom.classList.remove('fadeIn');
+            duelRoom.classList.add('fadeOut');
+            fillCommonRoom();
+        }
+
+        function goToDuel(choice) {
+            setActiveTab(choice);
+            setBackground('duel');
+            // welcomeDiv.hidden = true;
+            welcomeDiv.classList.remove('fadeIn');
+            welcomeDiv.classList.add('fadeOut');
+            // commonRoom.hidden = true;
+            commonRoom.classList.remove('fadeIn');
+            commonRoom.classList.add('fadeOut');
+            // duelRoom.hidden = false;
+            duelRoom.classList.add('fadeIn');
+            duelRoom.classList.remove('fadeOut');
+        }
+
+        function beginAdventure() {
+            currHouse = randHouse;
+            welcomeDiv.classList.remove('fadeIn');
+            welcomeDiv.classList.add('fadeOut');
+            hatResponse.classList.add('fadeIn');
+            hatResponse.classList.remove('fadeOut');
+        }
+
+        function setBackground(room) {
+            switch (room) {
+                case 'welcome':
+                    body.style.background = 'url("hogwarts-spooky-pic.jpg") no-repeat';
+                    break;
+                case 'common':
+                    let img = '"gryff-common-room-med.jpg"';
+                    if (currHouse === 'Slytherin') img = '"slytherin-common-room.jpg"';
+                    else if (currHouse === 'Hufflepuff') img = '"hufpuf-common-room.jpg"';
+                    else if (currHouse === 'Ravenclaw') img = '"raven-common-room.jpg"';
+
+                    body.style.background = 'url('+img+') no-repeat';
+                    body.style.backgroundSize = 'cover';
+                    body.style.backgroundAttachment = 'scroll';
+                    break;
+                case 'duel':
+                    body.style.background = 'url("dueling-club-med.png") no-repeat';
+                    body.style.backgroundSize = 'cover';
+                    body.style.backgroundAttachment = 'scroll';
+                    break;
+                default:
+                    console.log('Unreachable');
+            }
+            // body.style.backgroundSize = '500px 2500px';
+        }
+
+        function fillCommonRoom() {
+            let houseInfo = houses[currHouse];
+            console.log(houseInfo);
+
+            document.getElementsByClassName('common-room-title')[0].innerHTML = 'The ' + currHouse + ' Common Room';
+
+            fillHouseMembers(houseInfo);
+            fillHouseInfo(houseInfo);
+        }
+
+        function fillHouseMembers(houseInfo) {
+
+            let membersList = document.getElementById('members-list');
+            while (membersList.firstChild) {
+                membersList.removeChild(membersList.firstChild);
+            }
+
+            for (let i = 0; i < houseInfo.members.length; i++) {
+                let memberId = houseInfo.members[i];
+                let member = characters[memberId];
+                if (member === undefined) continue;
+
+                let memberRow = document.createElement('li');
+                memberRow.innerHTML = member.name;
+
+                membersList.appendChild(memberRow);
+            }
+        }
+
+        function fillHouseInfo(houseInfo) {
+
+            let houseInfoEl = document.getElementsByClassName('house-general-info')[0];
+            houseInfoEl.children[5].style.marginBottom = '8px';
+
+            let valuesList = houseInfoEl.children[6];
+            while (valuesList.firstChild) {
+                valuesList.removeChild(valuesList.firstChild);
+            }
+            valuesList.style.listStyle = 'none';
+            valuesList.style.paddingLeft = '8px';
+            valuesList.style.margin = '0';
+
+            for (let i = 0; i < houseInfo.values.length; i++) {
+                let value = document.createElement('li');
+                value.innerHTML = caps(houseInfo.values[i]);
+                valuesList.appendChild(value);
+            }
+        }
+
+        function caps(str) {
+            return str.substr(0,1).toUpperCase() + str.substr(1);
+        }
+
+    </script>
+
+</body>
+</html>

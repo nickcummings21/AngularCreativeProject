@@ -1,0 +1,196 @@
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+    font-family: 'Marcellus SC', serif;
+    color: rgb(234, 252, 255);
+    /*background-color: black;*/
+    background: url("hogwarts-spooky-pic.jpg") no-repeat;
+    background-size: cover;
+    min-height: 1000px;
+    /*-webkit-transition: background-image .5s .15s;*/
+    /*transition: background-image .5s .15s;*/
+}
+
+.main-menu {
+    text-align: center;
+    background-color: #36006b;
+    margin: 0;
+    padding: 0;
+}
+
+.main-menu-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.main-menu-list__item {
+    display: inline-block;
+    margin: 0;
+    padding: 16px 32px;
+    cursor: pointer;
+    outline: none !important;
+}
+
+.active,
+.main-menu-list__item:hover,
+.main-menu-list__item:active {
+    background-color: #5f00ba;
+}
+
+.logo {
+    margin-top: 2%;
+    width: 10%;
+}
+
+.logo-left {
+    margin-left: 5%;
+    float: left;
+}
+
+.logo-right {
+    margin-right: 5%;
+    float: right;
+}
+
+#welcome {
+    text-align: center;
+}
+
+#welcome,
+#sort-hat-response,
+#common-room,
+#dueling-room {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    right: 0;
+}
+
+.response-content {
+    text-align: center;
+    background-color: #36006b;
+    border: solid 2px darkgray;
+    margin: 32px 25%;
+    padding: 24px;
+    opacity: .8;
+}
+
+.main-title {
+    background-color: #36006b;
+    /*border-radius: 8px;*/
+    border: solid 2px darkgray;
+    margin: 32px 25%;
+    padding: 24px;
+    opacity: 0.8;
+    /*box-shadow: 2px 2px 4px 4px rgba(234, 252, 255, .5);*/
+}
+
+.pre-main-title,
+.post-main-title {
+    font-size: 20px;
+    margin: 0;
+    padding: 0;
+}
+
+.prime-main-title {
+    font-size: 50px;
+    margin: 0;
+    padding: 0;
+}
+
+.about-hogwarts {
+    background-color: #36006b;
+    border: solid 2px darkgray;
+    margin: 32px 128px;
+    padding: 24px;
+    text-align: center;
+    opacity: 0.8;
+}
+
+.start-btn {
+    font-family: 'Marcellus SC', serif;
+    color: rgb(234, 252, 255);
+    background-color: #36006b;
+    border: solid 2px darkgray;
+    padding: 8px 32px;
+    cursor: pointer;
+    box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, .5);
+    outline: none !important;
+    opacity: .8;
+}
+
+.start-btn:active,
+.start-btn:hover {
+    background-color: #5f00ba;
+}
+
+.start-btn:active {
+    box-shadow: none;
+}
+
+.common-room-title,
+.dueling-room-title {
+    text-align: center;
+    background-color: #36006b;
+    border: solid 2px darkgray;
+    margin: 32px 25%;
+    padding: 24px;
+    opacity: .8;
+}
+
+.house-info {
+    text-align: center;
+}
+
+.house-general-info {
+    text-align: left;
+    vertical-align: top;
+    display: inline-block;
+    background-color: #36006b;
+    border: solid 2px darkgray;
+    padding: 12px 72px 12px 24px;
+    margin: 32px;
+    width: 400px;
+    opacity: .8;
+}
+
+.house-members {
+    text-align: left;
+    vertical-align: top;
+    display: inline-block;
+    background-color: #36006b;
+    border: solid 2px darkgray;
+    padding: 12px 72px 12px 24px;
+    margin: 32px;
+    opacity: .8;
+}
+
+.house-members > ul {
+    list-style: none;
+    padding-left: 8px;
+}
+
+.house-members > ul > li{
+    margin: 0;
+    padding: 0;
+}
+
+.fadeOut {
+    visibility: hidden;
+    float: left;
+    opacity: 0;
+    transition: visibility 0s linear .7s, opacity .7s;
+}
+
+.fadeIn {
+    visibility: visible;
+    opacity: 1;
+    transition: visibility 0s linear .7s, opacity .7s;
+    transition-delay: .25s;
+}
